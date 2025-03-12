@@ -1,0 +1,68 @@
+/* MaterialDesignIcons.com */
+@font-face {
+  font-family: "Material Design Icons";
+  src: url("materialdesignicons-webfont.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+}
+
+.mdi:before,
+.mdi-set {
+  display: inline-block;
+  font: normal normal normal 24px/1 "Material Design Icons";
+  font-size: inherit;
+  text-rendering: auto;
+  line-height: inherit;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.mdi-menu::before {
+  content: "\F035C";
+}
+
+.mdi-menu-down::before {
+  content: "\F035D";
+}
+
+.mdi-menu-down-outline::before {
+  content: "\F06B6";
+}
+
+.mdi-menu-left::before {
+  content: "\F035E";
+}
+
+.mdi-menu-left-outline::before {
+  content: "\F0A02";
+}
+
+.mdi-menu-open::before {
+  content: "\F0BAB";
+}
+
+.mdi-menu-right::before {
+  content: "\F035F";
+}
+
+.mdi-menu-right-outline::before {
+  content: "\F0A03";
+}
+
+.mdi-menu-swap::before {
+  content: "\F0A64";
+}
+
+.mdi-menu-swap-outline::before {
+  content: "\F0A65";
+}
+
+.mdi-menu-up::before {
+  content: "\F0360";
+}
+
+.mdi-menu-up-outline::before {
+  content: "\F06B7";
+}
+
+/*# sourceMappingURL=materialdesignicons.css.map */

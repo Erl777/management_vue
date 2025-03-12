@@ -13,6 +13,9 @@ import App from './App.vue'
 
 // Composables
 import { createApp } from 'vue'
+import { registerSW } from "virtual:pwa-register";
+
+registerSW({ immediate: true });
 
 const app = createApp(App)
 // app.config.globalProperties.$axios = axios;
