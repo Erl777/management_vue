@@ -101,7 +101,6 @@ export const useIndexedStore = defineStore('database',{
         const todos = this.db.transaction(objectStore.TODOS, 'readwrite').objectStore(objectStore.TODOS)
 
         payload.forEach(item => {
-          console.log(item.order)
           let request = todos.put(item)
 
           request.onerror = (event) => {

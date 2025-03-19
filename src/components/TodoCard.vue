@@ -2,8 +2,9 @@
   <v-col cols="12" md="4" lg="3" class="card-col pa-0 px-md-1">
     <v-card :class="{ 'd-none': isHidden }">
       <div class="d-flex flex-nowrap align-center">
-        <v-card-title :class="['flex-1-1-100 pr-0', { 'short': short_card_titles }]">
-          {{ todo.title }}
+        <v-icon class="drag-icon js-drag" icon="mdi-drag"/>
+        <v-card-title :class="['flex-1-1-100 pr-0 pl-10', { 'short': short_card_titles }]">
+          <span>{{ todo.title }}</span>
         </v-card-title>
 
         <v-menu v-if="!isDone">
@@ -56,7 +57,7 @@
         </v-chip>
       </v-chip-group>
 
-      <v-card-actions class="pl-3" v-if="!isDone">
+      <v-card-actions class="d-flex justify-center px-3 pt-1 pb-2" v-if="!isDone">
         <v-btn
           color="primary"
           variant="elevated"
@@ -88,7 +89,7 @@ const props = defineProps({
 
 const setTodoDone = () => {
   const todo = todosStore.getTodoById(props.todo.id)
-  todosStore.setTodoDoneById(todo)
+  todosStore.setTodoDone(todo)
   // saveChanges()
   emit('done')
 }
@@ -115,7 +116,12 @@ const showChipLabels = computed(() => !todosStore.hide_labels)
 const isDone = computed(() => props.todo.done)
 const isHidden = computed(() => props.todo.hidden)
 
-const showUrgentChip = computed(() => (props.todo.urgent && !props.todo.deferred) || (props.todo.deferred && isToday(props.todo.deferred)))
+const showUrgentChip = computed(() => {
+  if (props.todo.deferred) {
+    return isToday(props.todo.deferred)
+  }
+  return props.todo.urgent;
+})
 const showDefferedChip = computed(() => props.todo.deferred && !isToday(props.todo.deferred))
 </script>
 
@@ -129,5 +135,11 @@ const showDefferedChip = computed(() => props.todo.deferred && !isToday(props.to
 }
 .v-card-actions {
   min-height: 26px;
+}
+.drag-icon {
+  position: absolute;
+  left: 10px;
+  top: 8px;
+  font-size: 30px;
 }
 </style>

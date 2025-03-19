@@ -22,6 +22,7 @@ export const STORE_DEFAULT_OBJECT = {
   hide_efficient: false,
   hide_labels: false,
   short_card_titles: false,
+  show_info_dialog: true,
 }
 
 export const TABS = {

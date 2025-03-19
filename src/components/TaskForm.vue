@@ -10,6 +10,7 @@
               variant="outlined"
               :rules="[v => !!v || 'Заголовок отбязателен']"
               required
+              autofocus
             />
           </v-col>
 

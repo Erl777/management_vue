@@ -3,7 +3,7 @@
     <draggable
       :model-value="todos"
       item-key="id"
-      handle=".v-card-title"
+      handle=".js-drag"
       class="pa-2 d-md-flex flex-md-wrap"
       :disabled="dragDisabled"
       @end="swapCardIndexes"

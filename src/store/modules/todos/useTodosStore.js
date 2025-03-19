@@ -1,4 +1,4 @@
-import { isToday, TASK_PRIORITY, TODAY, TODO_OUTDATED_DAYS_VALUE } from "@/assets/js/consts/constants";
+import { isToday, TASK_PRIORITY, TODAY, TODO_OUTDATED_DAYS_VALUE , STORE_DEFAULT_OBJECT} from "@/assets/js/consts/constants";
 import { getTodoPriority } from "@/assets/js/helpers";
 import { defineStore } from "pinia";
 import { useIndexedStore } from "@/store/modules/todos/useIndexedStore";
@@ -7,12 +7,13 @@ import { toRaw } from "vue";
 export const useTodosStore = defineStore('todos',{
   state: () => ({
     tasks: [],
-    date: null,
-    doneToday: 0,
-    doneTotal: 0,
-    hide_efficient: false,
-    hide_labels: false,
-    short_card_titles: false,
+    // date: null,
+    // doneToday: 0,
+    // doneTotal: 0,
+    // hide_efficient: false,
+    // hide_labels: false,
+    // short_card_titles: false,
+    ...STORE_DEFAULT_OBJECT,
   }),
   getters: {
     /**
@@ -72,6 +73,10 @@ export const useTodosStore = defineStore('todos',{
 
     getTodoById: (state) => (id) => {
       return state.tasks.find(item => item.id === id)
+    },
+
+    getTodosOrders: (state) => {
+      return state.todosSortedForRender.map(item => item.order).filter((num) => typeof num !== "undefined");
     }
   },
   actions: {
@@ -115,12 +120,36 @@ export const useTodosStore = defineStore('todos',{
     checkRepeatedTodos() {
       this.tasks.filter(item => item.repeated).forEach(item => {
         if(item.isDone && !isToday(item.done)) {
+          const orderExist = this.getTodosOrders.includes(item.order)
+          if (orderExist) this.moveOrdersRight(item.order)
           item.isDone = false
           item.done = null
         }
         item.deferred = TODAY.toISOString()
         item.urgent = true
       })
+    },
+
+    /**
+     * Сдвигает все ордера правее от переданного ( приплюсовывает )
+     * @param startOrder {number}
+     */
+    moveOrdersRight(startOrder) {
+      const updatedItems = this.todosSortedForRender.reduce((accum, item) => {
+        if (item.order >= startOrder) item.order++
+        accum.push(toRaw(item))
+        return accum
+      }, [])
+
+      const newOrders = updatedItems.map(item => item.order)
+
+      if (!newOrders.includes(startOrder)) {
+        const indexedStore = useIndexedStore();
+        indexedStore.updateOrdersInDb(updatedItems)
+      } else {
+        console.error("Проблема с индексами!")
+        console.log(startOrder, newOrders)
+      }
     },
 
     checkHiddenTodos() {
@@ -143,7 +172,11 @@ export const useTodosStore = defineStore('todos',{
       if(outdatedTodosId.length) {
         console.log('outdated', outdatedTodosId)
         this.tasks = this.tasks.filter(item => !outdatedTodosId.includes(item.id))
-        // this.saveStateToStore()
+        // Delete outdated tasks silent
+        const indexedStore = useIndexedStore();
+        outdatedTodosId.forEach(id => {
+          indexedStore.deleteTaskFromDb(id)
+        })
       }
     },
 
@@ -161,10 +194,10 @@ export const useTodosStore = defineStore('todos',{
       // this.setOrderForTodos()
     },
 
-    setTodoDoneById(todo) {
+    setTodoDone(todo) {
       todo.isDone = true
       todo.done = new Date().toISOString()
-      delete todo.order;
+      if (!todo.repeated) delete todo.order;
       this.doneToday += 1
       this.doneTotal += 1
       const indexedStore = useIndexedStore();

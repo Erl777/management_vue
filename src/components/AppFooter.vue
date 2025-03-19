@@ -40,7 +40,7 @@ const totalTodosCount = computed(() => todosStore.doneTotal) // store.getters["t
       v-if="isDoneTab"
       class="text-subtitle-1"
     >
-      Выполнено всего <strong>{{ totalTodosCount }}</strong> задач
+      Выполнено за всё время <strong>{{ totalTodosCount }}</strong> задач
     </span>
     <v-progress-linear
       v-else

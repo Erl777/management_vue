@@ -1,26 +1,27 @@
 <template>
   <v-app>
-    <AppBar
-      v-model:active-tab="activeTab"
-      @toggle-sidebar="drawer = !drawer"
-    />
+    <template v-if="!isLoading">
+      <AppBar
+        v-model:active-tab="activeTab"
+        @toggle-sidebar="drawer = !drawer"
+      />
 
-    <AppSidebar
-      v-model="drawer"
-    />
+      <AppSidebar
+        v-model="drawer"
+      />
 
-    <v-main>
-      <HomePage :mode="activeTab" />
-    </v-main>
+      <v-main>
+        <HomePage :mode="activeTab" />
+      </v-main>
 
-    <AppFooter :active-tab="activeTab" />
+      <AppFooter :active-tab="activeTab" />
+    </template>
     <v-overlay
-      :opacity="1"
-      :value="isLoading"
-      absolute
+      :model-value="isLoading"
+      class="align-center justify-center"
+      :opacity="0.8"
     >
-      <v-progress-circular indeterminate size="64">
-        Loading...
+      <v-progress-circular color="orange" indeterminate size="64">
       </v-progress-circular>
     </v-overlay>
   </v-app>
@@ -48,7 +49,7 @@ const todosStore = useTodosStore();
 const indexedStore = useIndexedStore();
 const drawer = ref(false);
 const activeTab = ref(TABS.IN_WORK);
-const isLoading = ref(false);
+const isLoading = ref(true);
 
 const initCallback = () => {
   if (todosStore.tasks.length) {
@@ -59,6 +60,7 @@ const initCallback = () => {
   if(!isToday(todosStore.date)) {
     todosStore.resetDayDoneCounter()
   }
+  isLoading.value = false;
 }
 
 indexedStore.init(initCallback);
