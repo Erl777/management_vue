@@ -6,6 +6,7 @@ import { toRaw } from "vue";
 
 export const useTodosStore = defineStore('todos',{
   state: () => ({
+    /** @type {TodosStore.TodoList} */
     tasks: [],
     // date: null,
     // doneToday: 0,
@@ -21,10 +22,10 @@ export const useTodosStore = defineStore('todos',{
      */
     todosSortedForRender: (state) => {
       return [
-        ...state.getImportantAndUrgent.reverse(),
-        ...state.getUrgent.reverse(),
-        ...state.getImportant.reverse(),
-        ...state.getOther.reverse()
+        ...state.getImportantAndUrgent.sort((a, b) => a.order - b.order),
+        ...state.getUrgent.sort((a, b) => a.order - b.order),
+        ...state.getImportant.sort((a, b) => a.order - b.order),
+        ...state.getOther.sort((a, b) => a.order - b.order)
       ]
     },
 

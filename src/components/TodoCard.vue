@@ -2,8 +2,8 @@
   <v-col cols="12" md="4" lg="3" class="card-col pa-0 px-md-1">
     <v-card :class="{ 'd-none': isHidden }">
       <div class="d-flex flex-nowrap align-center">
-        <v-icon class="drag-icon js-drag" icon="mdi-drag"/>
-        <v-card-title :class="['flex-1-1-100 pr-0 pl-10', { 'short': short_card_titles }]">
+        <v-icon v-if="!isDone" class="drag-icon js-drag" icon="mdi-drag"/>
+        <v-card-title :class="['flex-1-1-100 pr-0', { 'short': short_card_titles, 'pl-10': !isDone }]">
           <span>{{ todo.title }}</span>
         </v-card-title>
 
@@ -51,7 +51,7 @@
           <v-icon :class="{ 'mr-1': showChipLabels }" icon="mdi-clock"/>
           <span v-if="showChipLabels">Срочная</span>
         </v-chip>
-        <v-chip v-if="showDefferedChip">
+        <v-chip v-if="showDeferredChip">
           <v-icon :class="{ 'mr-1': showChipLabels }" icon="mdi-calendar-today"/>
           <span v-if="showChipLabels">Отложенная</span>
         </v-chip>
@@ -122,7 +122,7 @@ const showUrgentChip = computed(() => {
   }
   return props.todo.urgent;
 })
-const showDefferedChip = computed(() => props.todo.deferred && !isToday(props.todo.deferred))
+const showDeferredChip = computed(() => props.todo.deferred && !isToday(props.todo.deferred))
 </script>
 
 <style scoped>

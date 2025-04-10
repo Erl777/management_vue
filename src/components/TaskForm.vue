@@ -8,6 +8,7 @@
               v-model="form.title"
               label="Название задачи"
               variant="outlined"
+              density="compact"
               :rules="[v => !!v || 'Заголовок отбязателен']"
               required
               autofocus
@@ -19,8 +20,11 @@
               v-model="form.description"
               label="Описание задачи"
               variant="outlined"
+              density="compact"
+              rows="2"
+              max-rows="5"
+              auto-grow
               clearable
-              no-resize
               counter
             />
           </v-col>
@@ -38,6 +42,7 @@
               v-model="form.urgent"
               color="red"
               label="Срочная"
+              density="compact"
               hide-details
             ></v-checkbox>
           </v-col>
@@ -46,6 +51,7 @@
               v-model="form.important"
               color="orange"
               label="Важная"
+              density="compact"
               hide-details
             ></v-checkbox>
           </v-col>
@@ -53,6 +59,7 @@
             <v-checkbox
               v-model="form.repeated"
               label="Ежедневная"
+              density="compact"
               hide-details
             ></v-checkbox>
           </v-col>
@@ -114,6 +121,7 @@
         v-model="snackbarSuccess"
         :timeout="2000"
         color="success"
+        location="top"
       >
         {{ isCreating ? 'Задача добавлена' : 'Задача обновлена' }}
       </v-snackbar>

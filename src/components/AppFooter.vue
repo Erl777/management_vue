@@ -8,11 +8,13 @@ const props = defineProps({
 })
 
 const todosStore = useTodosStore();
+const averageDayTodosCount = 5; // среднее кол-во задач, если нет срочных
 
 const calcEfficient = computed(() => {
-  const deferredTodayTodos = todosStore.tasks.filter(item => (item.urgent && !item.deferred) || isToday(item.deferred))
+  const deferredTodayTodos = todosStore.tasks.filter(item => item.urgent)
+    .filter((item) => isToday(item.done) || isToday(item.deferred) || (!item.isDone && !item.deferred))
   const doneTodayTodosCount = todosStore.doneToday
-  const efficientValue = doneTodayTodosCount / (deferredTodayTodos.length || 1)
+  const efficientValue = doneTodayTodosCount / (deferredTodayTodos.length || averageDayTodosCount)
   return Math.round(efficientValue * 100)
 });
 

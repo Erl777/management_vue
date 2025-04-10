@@ -31,6 +31,7 @@
     v-model="isSnackbarOpen"
     :timeout="2000"
     color="success"
+    location="top"
   >
     {{ snackbarContent }}
   </v-snackbar>
