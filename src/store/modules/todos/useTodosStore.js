@@ -1,253 +1,98 @@
-import { isToday, TASK_PRIORITY, TODAY, TODO_OUTDATED_DAYS_VALUE , STORE_DEFAULT_OBJECT} from "@/assets/js/consts/constants";
-import { getTodoPriority } from "@/assets/js/helpers";
+import { isToday, TODAY, TODO_OUTDATED_DAYS_VALUE , STORE_DEFAULT_OBJECT} from "@/assets/js/consts/constants";
 import { defineStore } from "pinia";
-import { useIndexedStore } from "@/store/modules/todos/useIndexedStore";
-import { toRaw } from "vue";
+import { useIndexedStore } from "@/store/modules/indexed/useIndexedStore";
+import { computed, toRaw } from "vue";
+// import type { Todos } from "@/store/modules/todos/useTodosStoreTypes.types";
 
-export const useTodosStore = defineStore('todos',{
-  state: () => ({
-    /** @type {TodosStore.TodoList} */
-    tasks: [],
-    // date: null,
-    // doneToday: 0,
-    // doneTotal: 0,
-    // hide_efficient: false,
-    // hide_labels: false,
-    // short_card_titles: false,
-    ...STORE_DEFAULT_OBJECT,
-  }),
-  getters: {
-    /**
-     * Берутся все, кроме готовых
-     */
-    todosSortedForRender: (state) => {
-      return [
-        ...state.getImportantAndUrgent.sort((a, b) => a.order - b.order),
-        ...state.getUrgent.sort((a, b) => a.order - b.order),
-        ...state.getImportant.sort((a, b) => a.order - b.order),
-        ...state.getOther.sort((a, b) => a.order - b.order)
-      ]
-    },
+export const useTodosStore = defineStore("todos", () => {
+  const { addTaskToDb, deleteTaskFromDb, updateTask, updateSetting } = useIndexedStore();
 
-    getTodosCount: (state) => {
-      return state.tasks.length
-    },
+  const todos = new Map(); // ? reactivity
 
-    getDoneCount: (state) => {
-      return state.doneTotal
-    },
+  const todosList = computed(() => Array.from(todos.values()));
 
-    getDoneTodos: (state) => {
-      return state.tasks.filter(item => item.isDone)
-    },
+  const addTodosFromNowForTheEndOfMonth = () => {
 
-    getDoneTodayTodos: (state) => {
-      return state.tasks.filter(item => item.isDone && isToday(item.done))
-    },
+  }
 
-    getDoneToday: (state) => {
-      return state.doneToday
-    },
+  const getTodoById = (id) => {
+    return todos.get(id)
+  }
 
-    getToday: (state) => {
-      return state.tasks.filter(item => getTodoPriority(item) === TASK_PRIORITY.TODAY)
-    },
+  const setTodosToStore = (payload) => {
+    payload.forEach((item) => todos.set(item.id, item));
+  }
 
-    getImportantAndUrgent: (state) => {
-      return state.tasks.filter(item => getTodoPriority(item) === TASK_PRIORITY.IMP_AND_URG)
-    },
-
-    getImportant: (state) => {
-      return state.tasks.filter(item => getTodoPriority(item) === TASK_PRIORITY.IMPORTANT)
-    },
-
-    getUrgent: (state) => {
-      return state.tasks.filter(item => getTodoPriority(item) === TASK_PRIORITY.URGENT)
-    },
-
-    getOther: (state) => {
-      return state.tasks.filter(item => {
-        const priority = getTodoPriority(item)
-        return priority === TASK_PRIORITY.NORMAL || priority === TASK_PRIORITY.DEFERRED
-      })
-    },
-
-    getTodoById: (state) => (id) => {
-      return state.tasks.find(item => item.id === id)
-    },
-
-    getTodosOrders: (state) => {
-      return state.todosSortedForRender.map(item => item.order).filter((num) => typeof num !== "undefined");
+  const addTodo = async (todo) => {
+    // async, try, catch
+    try {
+      await addTaskToDb(todo); // proverit
+      todos.set(todo.id, todo);
+    } catch (e) {
+      throw new Error(`Не удалось добавить todo c id ${todo.id}`, e)
     }
-  },
-  actions: {
-    setState(payload) {
-      Object.keys(payload).forEach(key => {
-        this[key] = payload[key];
+  }
+
+  const setTodoDone = (todo) => {
+    todo.isDone = true
+    todo.done = new Date().toISOString() // нужно ли дата выполнения? ( вроде, нет )
+
+    // increaseDoneCounter
+    this.doneToday += 1 // отдельно вынести
+    this.doneTotal += 1
+
+    updateTask(toRaw(todo))
+    updateSetting({ key: "doneToday", value: this.doneToday }) // const vmesto str
+    updateSetting({ key: "doneTotal", value: this.doneTotal })
+    this.setOrderForTodos();
+  }
+
+  const deleteTodoById = (id) => { // db -> local, test error
+    // async, try, catch
+    deleteTaskFromDb(id) // test err
+    const isDeleted = todos.delete(id);
+  }
+
+  const updateTodoById = (payload) => {
+    let todo = getTodoById(payload.id);
+    if(todo) {
+      Object.assign(todo, payload) // ???
+    }
+    else console.error(`Todo ${payload.id} not found`)
+  }
+
+  // перелать на удаление через время ( тоже делал удаление )
+  // import { useDate } from "vuetify/framework";
+  // разделить на 2 метода
+  // в настройки можно добавить ключ удалено последний раз
+  // условие для удаления первый или последний день месяца + старше 90 дней
+  // отдельный метод для подсчета разницы в днях
+  const checkOutdatedTasks = () => {
+    const outdatedTodosId = this.getDoneTodos.reduce((accum, item) => {
+      const Difference_In_Time = TODAY.getTime() - new Date(item.done).getTime();
+      const Difference_In_Days = Math.round(Difference_In_Time / (1000 * 3600 * 24));
+      if(Difference_In_Days > TODO_OUTDATED_DAYS_VALUE) {
+        accum.push(item.id)
+      }
+      return accum
+    }, [])
+    if(outdatedTodosId.length) {
+      console.log('outdated', outdatedTodosId)
+      this.tasks = this.tasks.filter(item => !outdatedTodosId.includes(item.id))
+      // Delete outdated tasks silent
+      outdatedTodosId.forEach(id => {
+        deleteTaskFromDb(id)
       })
-    },
+    }
+  }
 
-    setTasks(payload) {
-      this.tasks = payload;
-    },
-    /**
-     * Обновляются все, кроме готовых
-    */
-    setOrderForTodos() {
-      this.todosSortedForRender.forEach((item, i) => item.order = i)
-      const indexedStore = useIndexedStore();
-      indexedStore.updateOrdersInDb(this.todosSortedForRender.map(item => toRaw(item)))
-      // console.log(changedItems, changedItems.length)
-      // const indexedStore = useIndexedStore();
-      // indexedStore.updateOrdersInDb(changedItems)
-    },
-
-    setOrdersForSwap() {
-      return this.todosSortedForRender.reduce((accum, item, i) => {
-        if (!item.order || item.order !== i) {
-          item.order = i
-          accum.push(toRaw(item));
-        }
-        return accum;
-      }, [])
-    },
-
-    updateSettingByKey({ key, value }) {
-      this[key] = value;
-      const indexedStore = useIndexedStore();
-      indexedStore.updateSetting({ key, value })
-    },
-
-    checkRepeatedTodos() {
-      this.tasks.filter(item => item.repeated).forEach(item => {
-        if(item.isDone && !isToday(item.done)) {
-          const orderExist = this.getTodosOrders.includes(item.order)
-          if (orderExist) this.moveOrdersRight(item.order)
-          item.isDone = false
-          item.done = null
-        }
-        item.deferred = TODAY.toISOString()
-        item.urgent = true
-      })
-    },
-
-    /**
-     * Сдвигает все ордера правее от переданного ( приплюсовывает )
-     * @param startOrder {number}
-     */
-    moveOrdersRight(startOrder) {
-      const updatedItems = this.todosSortedForRender.reduce((accum, item) => {
-        if (item.order >= startOrder) item.order++
-        accum.push(toRaw(item))
-        return accum
-      }, [])
-
-      const newOrders = updatedItems.map(item => item.order)
-
-      if (!newOrders.includes(startOrder)) {
-        const indexedStore = useIndexedStore();
-        indexedStore.updateOrdersInDb(updatedItems)
-      } else {
-        console.error("Проблема с индексами!")
-        console.log(startOrder, newOrders)
-      }
-    },
-
-    checkHiddenTodos() {
-      this.tasks.filter(item => item.hidden).forEach(item => {
-        if(!isToday(item.hidden)) {
-          item.hidden = null
-        }
-      })
-    },
-
-    checkOutdatedTasks() {
-      const outdatedTodosId = this.getDoneTodos.reduce((accum, item) => {
-        const Difference_In_Time = TODAY.getTime() - new Date(item.done).getTime();
-        const Difference_In_Days = Math.round(Difference_In_Time / (1000 * 3600 * 24));
-        if(Difference_In_Days > TODO_OUTDATED_DAYS_VALUE) {
-          accum.push(item.id)
-        }
-        return accum
-      }, [])
-      if(outdatedTodosId.length) {
-        console.log('outdated', outdatedTodosId)
-        this.tasks = this.tasks.filter(item => !outdatedTodosId.includes(item.id))
-        // Delete outdated tasks silent
-        const indexedStore = useIndexedStore();
-        outdatedTodosId.forEach(id => {
-          indexedStore.deleteTaskFromDb(id)
-        })
-      }
-    },
-
-    resetDayDoneCounter() {
-      console.log("RESET !!!");
-      this.date = TODAY.toDateString()
-      this.doneToday = 0
-      const indexedStore = useIndexedStore();
-      indexedStore.updateSetting({ key: "date", value: this.date })
-      indexedStore.updateSetting({ key: "doneToday", value: 0 })
-    },
-
-    addTodo(todo) {
-      this.tasks.push(todo)
-      // this.setOrderForTodos()
-    },
-
-    setTodoDone(todo) {
-      todo.isDone = true
-      todo.done = new Date().toISOString()
-      if (!todo.repeated) delete todo.order;
-      this.doneToday += 1
-      this.doneTotal += 1
-      const indexedStore = useIndexedStore();
-      indexedStore.updateTask(toRaw(todo))
-      indexedStore.updateSetting({ key: "doneToday", value: this.doneToday })
-      indexedStore.updateSetting({ key: "doneTotal", value: this.doneTotal })
-      this.setOrderForTodos();
-    },
-
-    deleteTodoById(id) {
-      const indexedStore = useIndexedStore();
-      indexedStore.deleteTaskFromDb(id)
-      this.tasks = this.tasks.filter(item => item.id !== id)
-      this.setOrderForTodos()
-    },
-
-    hideTodoForToday(id) {
-      const todo = this.tasks.find(item => item.id === id)
-      if(todo) {
-        todo.hidden = new Date().toISOString()
-        const indexedStore = useIndexedStore();
-        indexedStore.updateTask(toRaw(todo))
-      }
-    },
-
-    updateTodoById(payload) {
-      let todo = this.tasks.find(item => item.id === payload.id)
-      if(todo) {
-        todo = Object.assign(todo, payload)
-        this.setOrderForTodos()
-      }
-      else console.error(`Todo ${payload.id} not found`)
-    },
-
-    changeTodoOrder({ id, order }) {
-      const todo = this.tasks.find(item => item.id === id)
-      if(todo) {
-        todo.order = order
-        const indexedStore = useIndexedStore();
-        indexedStore.updateTask(toRaw(todo));
-      }
-      else console.error(`Todo ${id} not found`)
-    },
-
-    // getTodosFromLocalStore() {
-    //   this.setState(JSON.parse(localStorage.getItem(localStorageKey)))
-    // },
-    // saveStateToStore() {
-    //   localStorage.setItem(localStorageKey, JSON.stringify(this.$state))
-    // },
-  },
-});
+  return {
+    todosList,
+    setTodosToStore,
+    addTodo,
+    setTodoDone,
+    updateTodoById,
+    deleteTodoById,
+    checkOutdatedTasks
+  }
+})
