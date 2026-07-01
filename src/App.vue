@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <template v-if="!isLoading">
+    <template v-if="!isAppLoading">
       <AppBar
         v-model:active-tab="activeTab"
         @toggle-sidebar="drawer = !drawer"
@@ -11,31 +11,35 @@
       />
 
       <v-main>
-        <HomePage :mode="activeTab" />
+        <HomePage v-if="false" :mode="activeTab" />
+        <Calendar />
       </v-main>
 
-      <AppFooter :active-tab="activeTab" />
+      <AppFooter v-if="false" :active-tab="activeTab" />
     </template>
     <v-overlay
-      :model-value="isLoading"
+      :model-value="isAppLoading"
       class="align-center justify-center"
       :opacity="0.8"
     >
-      <v-progress-circular color="orange" indeterminate size="64">
-      </v-progress-circular>
+      <v-progress-circular
+        color="orange"
+        indeterminate
+        size="64"
+      />
     </v-overlay>
   </v-app>
 </template>
 
 <script setup>
 import { ref } from "vue";
-import { isToday, TABS, localStorageKey } from "@/assets/js/consts/constants";
+import { TABS, localStorageKey } from "@/assets/js/consts/constants";
 import AppBar from "@/components/AppBar.vue";
 import HomePage from "@/pages/HomePage.vue";
 import AppSidebar from "@/components/AppSidebar.vue";
 import AppFooter from "@/components/AppFooter.vue";
-import { useTodosStore } from "@/store/modules/todos/useTodosStore";
-import { useIndexedStore } from "@/store/modules/todos/useIndexedStore";
+import { useInitApp } from "@/composables/InitApp";
+import { Calendar } from "@/pages";
 
 /*
 *   <v-main>
@@ -45,28 +49,17 @@ import { useIndexedStore } from "@/store/modules/todos/useIndexedStore";
 
 
 /* -------------------- */
-const todosStore = useTodosStore();
-const indexedStore = useIndexedStore();
+const { initApp, isAppLoading } = useInitApp();
+
 const drawer = ref(false);
 const activeTab = ref(TABS.IN_WORK);
-const isLoading = ref(true);
 
-const initCallback = () => {
-  if (todosStore.tasks.length) {
-    todosStore.checkOutdatedTasks()
-    todosStore.checkRepeatedTodos()
-    todosStore.checkHiddenTodos()
-  }
-  if(!isToday(todosStore.date)) {
-    todosStore.resetDayDoneCounter()
-  }
-  isLoading.value = false;
-}
+initApp();
 
-indexedStore.init(initCallback);
-
+// это когда еще не использовался indexedDb
 if(Object.prototype.hasOwnProperty.call(localStorage, localStorageKey)) {
   console.log("Clear local store")
   localStorage.removeItem(localStorageKey)
 }
+
 </script>
