@@ -7,7 +7,6 @@ import VueRouter from 'unplugin-vue-router/vite'
 
 // Utilities
 import { defineConfig } from 'vite'
-import { fileURLToPath, URL } from 'node:url'
 import { VitePWA } from "vite-plugin-pwa";
 
 // https://vitejs.dev/config/
@@ -58,7 +57,7 @@ export default defineConfig({
                 ],
                 "orientation": "portrait",
                 "display": "standalone",
-                "dir": "auto",
+                "dir": "ltr",
                 "lang": "ru-RU",
                 "name": "Management",
                 "start_url": "/",
@@ -88,9 +87,9 @@ export default defineConfig({
     define: {'process.env': {}},
     resolve: {
         alias: {
-            '@': fileURLToPath(new URL('./src', import.meta.url)),
-            '@/assets': fileURLToPath(new URL('./src/assets', import.meta.url)),
-            '@/store': fileURLToPath(new URL('./src/store', import.meta.url)),
+            '@': "./src",
+            '@assets': './src/assets',
+            '@store': './src/store',
         },
         extensions: [
             '.js',
