@@ -7,15 +7,22 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
-    AppBar: typeof import('./src/components/AppBar.vue')['default']
-    AppFooter: typeof import('./src/components/AppFooter.vue')['default']
-    AppSidebar: typeof import('./src/components/AppSidebar.vue')['default']
+    AddTodoBtn: typeof import('./src/components/todo/AddTodoBtn.vue')['default']
+    AddTodoDialog: typeof import('./src/components/modals/TodoDialog.vue')['default']
+    AppBar: typeof import('./src/components/layout/AppBar.vue')['default']
+    AppFooter: typeof import('./src/components/layout/AppFooter.vue')['default']
+    AppSidebar: typeof import('./src/components/layout/AppSidebar.vue')['default']
+    BaseCrop: typeof import('./src/components/baseCrop.vue')['default']
     InfoDialog: typeof import('./src/components/InfoDialog.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SearchBar: typeof import('./src/components/layout/SearchBar.vue')['default']
+    SearhBar: typeof import('./src/components/SearhBar.vue')['default']
     StatisticCalendar: typeof import('./src/components/StatisticCalendar.vue')['default']
-    TaskForm: typeof import('./src/components/TaskForm.vue')['default']
+    TaskForm: typeof import('./src/components/TodoForm.vue')['default']
     TodoCard: typeof import('./src/components/TodoCard.vue')['default']
+    TodoDialog: typeof import('./src/components/modals/TodoDialog.vue')['default']
+    TodoForm: typeof import('./src/components/TodoForm.vue')['default']
     TodoList: typeof import('./src/components/TodoList.vue')['default']
   }
 }
