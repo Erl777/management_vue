@@ -4,7 +4,7 @@ import {
   ref,
   computed,
   useTemplateRef,
-  toRaw,
+  toRaw
 } from 'vue';
 import { WEEKDAYS, swatches } from '@/constants';
 import { useTodosStore } from '@/store/modules';
@@ -15,7 +15,7 @@ import type {
   TodoForm,
   Todo,
   TodoWithMultipleDates,
-  TodoDeferredType,
+  TodoDeferredType
 } from '@/types';
 import type { VForm } from 'vuetify/components';
 
@@ -36,13 +36,13 @@ const {
   addTodosFromDateForTheEndOfMonth,
   addTodo,
   getTodoById,
-  updateTodoById,
+  updateTodoById
 } = todosStore;
 const {
   getDaysFromCurrentForTheEndOfMonth,
   getEveryNDayForTheEndOfMonth,
   setTimeForDate,
-  getHumanizedDate,
+  getHumanizedDate
 } = useDateConfigurator();
 const { startOfDay, endOfDay, date } = useDate();
 
@@ -69,7 +69,7 @@ let form = reactive<TodoForm | Todo>({
   start: null,
   end: null,
   color: swatches[0][0],
-  timed: false,
+  timed: false
 });
 
 const isCreating = computed(() => todoId === null);
@@ -83,12 +83,12 @@ const humanizedDate = computed(() => {
 });
 
 const isSingleDateMode = computed(
-  () => todosType.value === 'single',
+  () => todosType.value === 'single'
 );
 const needToSelectDays = computed(
   () =>
     todosType.value === 'selected' &&
-    selectedDaysRange.value.length === 0,
+    selectedDaysRange.value.length === 0
 );
 
 if (todoId) {
@@ -107,10 +107,15 @@ const toggleDatePicker = () => {
   if (!form.deferred) {
     switch (todosType.value) {
       case 'everyday':
-        form.deferred = getDaysFromCurrentForTheEndOfMonth(date() as Date);
+        form.deferred = getDaysFromCurrentForTheEndOfMonth(
+          date() as Date
+        );
         break;
       case 'selected':
-        form.deferred = getEveryNDayForTheEndOfMonth(date() as Date, selectedDaysRange.value);
+        form.deferred = getEveryNDayForTheEndOfMonth(
+          date() as Date,
+          selectedDaysRange.value
+        );
         break;
     }
     showPicker.value = true;
@@ -118,7 +123,7 @@ const toggleDatePicker = () => {
 };
 
 const prepareFormDate = <T extends TodoForm | Todo>(
-  todoForm: T,
+  todoForm: T
 ): T => {
   let { deferred, timed } = todoForm;
   const created = new Date();
@@ -136,14 +141,14 @@ const prepareFormDate = <T extends TodoForm | Todo>(
   if (startEventTime.value) {
     start = setTimeForDate(
       start,
-      ...startEventTime.value.split(':').map((el) => +el),
+      ...startEventTime.value.split(':').map((el) => +el)
     );
   }
 
   if (endEventTime.value) {
     end = setTimeForDate(
       end,
-      ...endEventTime.value.split(':').map((el) => +el),
+      ...endEventTime.value.split(':').map((el) => +el)
     );
   }
 
@@ -156,7 +161,7 @@ const prepareFormDate = <T extends TodoForm | Todo>(
     created,
     start,
     end,
-    timed,
+    timed
   };
 };
 
@@ -171,7 +176,7 @@ const submitHandler = async () => {
     typeof prepareFormDate
   >;
   const payload: PrepareFormReturn = prepareFormDate(
-    toRaw(form),
+    toRaw(form)
   );
 
   if (isUpdating.value) {
@@ -199,7 +204,9 @@ const submitHandler = async () => {
   } else {
     try {
       // Multiple creation
-      await addTodosFromDateForTheEndOfMonth(payload as TodoWithMultipleDates);
+      await addTodosFromDateForTheEndOfMonth(
+        payload as TodoWithMultipleDates
+      );
       snackbarSuccess.value = true;
       formRef.value.reset();
     } catch (e) {
@@ -222,7 +229,7 @@ const submitHandler = async () => {
               variant="outlined"
               density="compact"
               :rules="[
-                (v) => !!v || 'Заголовок отбязателен',
+                (v) => !!v || 'Заголовок отбязателен'
               ]"
               required
               validate-on="blur lazy"
@@ -271,7 +278,7 @@ const submitHandler = async () => {
               :rules="[
                 (v) =>
                   !!v.length ||
-                  'Нужно выбрать хоть один день',
+                  'Нужно выбрать хоть один день'
               ]"
               required
               validate-on="blur lazy"

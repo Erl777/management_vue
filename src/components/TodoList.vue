@@ -10,7 +10,8 @@ interface Props {
 
 defineProps<Props>();
 
-const editModal = useTemplateRef<ModalInstance>('editModalRef');
+const editModal =
+  useTemplateRef<ModalInstance>('editModalRef');
 
 const todoId = ref<TodoId | null>(null);
 const snackbarContent = ref('Успех');

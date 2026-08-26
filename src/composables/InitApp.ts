@@ -1,16 +1,19 @@
 import {
   useTodosStore,
   useIndexedStore,
-  useSettingsStore,
+  useSettingsStore
 } from '@/store/modules';
 import { ref } from 'vue';
 import { isToday } from '@/utils';
 
 export function useInitApp() {
-  const { setTodosToStore, checkOutdatedTasks } = useTodosStore();
+  const { setTodosToStore, checkOutdatedTasks } =
+    useTodosStore();
   const settingsStore = useSettingsStore();
-  const { setSettings, resetDayDoneCounter } = settingsStore;
-  const { initDB, getSettingsFromDb, getAllTodosFromDb } = useIndexedStore();
+  const { setSettings, resetDayDoneCounter } =
+    settingsStore;
+  const { initDB, getSettingsFromDb, getAllTodosFromDb } =
+    useIndexedStore();
   const isAppLoading = ref(true);
 
   const loadTodos = async () => {

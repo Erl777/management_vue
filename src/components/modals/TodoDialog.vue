@@ -3,10 +3,11 @@ import { ref } from 'vue';
 import { TodoForm } from '@/components';
 import type {
   ModalInstance,
-  ModalProps,
+  ModalProps
 } from '@/components';
 
-const { todoId = null, withButton = false } = defineProps<ModalProps>();
+const { todoId = null, withButton = false } =
+  defineProps<ModalProps>();
 
 const isOpen = ref(false);
 
@@ -15,7 +16,7 @@ const openModal = () => {
 };
 
 defineExpose<ModalInstance>({
-  openModal,
+  openModal
 });
 </script>
 
@@ -25,7 +26,7 @@ defineExpose<ModalInstance>({
       <v-btn
         v-if="withButton"
         :class="[
-          'text-none font-weight-regular position-fixed mr-3 mb-3',
+          'text-none font-weight-regular position-fixed mr-3 mb-3'
         ]"
         icon="mdi-plus"
         variant="elevated"

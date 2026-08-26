@@ -27,7 +27,10 @@ initApp();
 
 // это когда еще не использовался indexedDb
 if (
-  Object.prototype.hasOwnProperty.call(localStorage, localStorageKey)
+  Object.prototype.hasOwnProperty.call(
+    localStorage,
+    localStorageKey
+  )
 ) {
   localStorage.removeItem(localStorageKey);
 }

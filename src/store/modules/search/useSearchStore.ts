@@ -14,13 +14,13 @@ export const useSearchStore = defineStore(
       return todosList.value.filter((item) =>
         item.name
           .toLowerCase()
-          .includes(searchStr.value.toLowerCase()),
+          .includes(searchStr.value.toLowerCase())
       );
     });
 
     return {
       searchStr,
-      searchResult,
+      searchResult
     };
-  },
+  }
 );

@@ -18,6 +18,6 @@ export default createVuetify({
   locale: {
     locale: 'ru',
     fallback: 'ru',
-    messages: { ru },
-  },
+    messages: { ru }
+  }
 });

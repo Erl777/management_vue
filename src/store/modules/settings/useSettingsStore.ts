@@ -12,11 +12,11 @@ export const useSettingsStore = defineStore(
     const settings: Ref<Settings> = ref(SETTINGS_DEFAULT);
 
     const doneTotalCount = computed(
-      () => settings.value.doneTotal,
+      () => settings.value.doneTotal
     );
 
     const doneTodayCount = computed(
-      () => settings.value.doneToday,
+      () => settings.value.doneToday
     );
 
     const setSettings = (payload: Settings) => {
@@ -24,10 +24,10 @@ export const useSettingsStore = defineStore(
     };
 
     const updateSettingByKey = async <
-      K extends keyof Settings,
+      K extends keyof Settings
     >(
       key: K,
-      value: Settings[K],
+      value: Settings[K]
     ) => {
       try {
         settings.value[key] = value;
@@ -35,7 +35,7 @@ export const useSettingsStore = defineStore(
       } catch (e) {
         console.error(e);
         throw new Error(
-          `Не удалось обновить настройку ${key} на ${value}`,
+          `Не удалось обновить настройку ${key} на ${value}`
         );
       }
     };
@@ -47,17 +47,17 @@ export const useSettingsStore = defineStore(
       try {
         const updateToday = updateSettingByKey(
           'doneToday',
-          settings.value.doneToday,
+          settings.value.doneToday
         );
         const updateTotal = updateSettingByKey(
           'doneTotal',
-          settings.value.doneTotal | 1,
+          settings.value.doneTotal | 1
         );
         await Promise.all([updateToday, updateTotal]);
       } catch (e) {
         console.error(e);
         throw new Error(
-          'Не удалось обновить счётчик выполненных задач',
+          'Не удалось обновить счётчик выполненных задач'
         );
       }
     };
@@ -69,11 +69,11 @@ export const useSettingsStore = defineStore(
       try {
         const updateDate = updateSettingByKey(
           'date',
-          settings.value.date,
+          settings.value.date
         );
         const updateToday = updateSettingByKey(
           'doneToday',
-          0,
+          0
         );
         await Promise.all([updateDate, updateToday]);
       } catch (e) {
@@ -89,7 +89,7 @@ export const useSettingsStore = defineStore(
       setSettings,
       updateSettingByKey,
       resetDayDoneCounter,
-      increaseDoneCounter,
+      increaseDoneCounter
     };
-  },
+  }
 );

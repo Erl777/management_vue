@@ -1,7 +1,7 @@
 import { useDate } from 'vuetify/framework';
 import {
   TodoShortTimeObj,
-  TodoWithMultipleDates,
+  TodoWithMultipleDates
 } from '@/types';
 
 export function useDateConfigurator() {
@@ -12,11 +12,11 @@ export function useDateConfigurator() {
     setDate,
     isSameDay,
     getHours,
-    getMinutes,
+    getMinutes
   } = useDate();
 
   const getDaysFromCurrentForTheEndOfMonth = (
-    value: Date,
+    value: Date
   ): Date[] => {
     if (!isValid(value)) {
       console.error('Не верный формат даты', value);
@@ -39,7 +39,7 @@ export function useDateConfigurator() {
   const setTimeForDate = (
     value: Date,
     hours = 0,
-    minutes = 0,
+    minutes = 0
   ) => {
     if (!isValid(value)) {
       console.error('Не верный формат даты', value);
@@ -54,7 +54,7 @@ export function useDateConfigurator() {
   const getDatesTimeObjects = ({
     deferred,
     start,
-    end,
+    end
   }: TodoWithMultipleDates): TodoShortTimeObj[] => {
     return deferred.map((item): TodoShortTimeObj => {
       return <TodoShortTimeObj>{
@@ -62,20 +62,20 @@ export function useDateConfigurator() {
         start: setTimeForDate(
           item,
           getHours(start),
-          getMinutes(start),
+          getMinutes(start)
         ),
         end: setTimeForDate(
           item,
           getHours(end),
-          getMinutes(end),
-        ),
+          getMinutes(end)
+        )
       };
     });
   };
 
   const getEveryNDayForTheEndOfMonth = (
     startDate: Date,
-    selectedDaysNum: number[],
+    selectedDaysNum: number[]
   ) => {
     const datesArr =
       getDaysFromCurrentForTheEndOfMonth(startDate);
@@ -112,7 +112,7 @@ export function useDateConfigurator() {
    * @returns Функция, принимающая дату и возвращающая новую дату
    */
   const getSeveralMonthsAgoDate = (
-    monthsCount: number = 1,
+    monthsCount: number = 1
   ) => {
     return (date: Date): Date => {
       return new Date(
@@ -122,7 +122,7 @@ export function useDateConfigurator() {
         date.getHours(),
         date.getMinutes(),
         date.getSeconds(),
-        date.getMilliseconds(),
+        date.getMilliseconds()
       );
     };
   };
@@ -134,7 +134,7 @@ export function useDateConfigurator() {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
-      day: 'numeric',
+      day: 'numeric'
     });
   };
 
@@ -145,6 +145,6 @@ export function useDateConfigurator() {
     setTimeForDate,
     getHumanizedDate,
     getThreeMonthsAgoDate,
-    isSameDay,
+    isSameDay
   };
 }

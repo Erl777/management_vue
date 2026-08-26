@@ -8,13 +8,13 @@ import type {
   StoreMethod,
   SettingsValues,
   Settings,
-  Todos,
+  Todos
 } from '@/types';
 import { promisify } from '@/utils';
 import {
   indexedDbKey,
   SETTINGS_DEFAULT,
-  objectStore,
+  objectStore
 } from '@/constants';
 
 export const useIndexedStore = defineStore(
@@ -29,7 +29,7 @@ export const useIndexedStore = defineStore(
         openRequest.onerror = () => {
           console.error(
             'Error opening db',
-            openRequest.error,
+            openRequest.error
           );
           callback(null, openRequest.error);
         };
@@ -44,7 +44,7 @@ export const useIndexedStore = defineStore(
           await removeDeprecatedTodos(db);
           callback();
         };
-      },
+      }
     );
 
     const createDb = (event: IDBVersionChangeEvent) => {
@@ -55,14 +55,14 @@ export const useIndexedStore = defineStore(
       }
       if (db.objectStoreNames.length === 0) {
         db.createObjectStore(objectStore.TODOS, {
-          keyPath: 'id',
+          keyPath: 'id'
         });
         const indexedStore = db.createObjectStore(
-          objectStore.SETTINGS,
+          objectStore.SETTINGS
         );
         // set default settings
         const settingsKeysArr = Object.keys(
-          SETTINGS_DEFAULT,
+          SETTINGS_DEFAULT
         ) as SettingsKeys[];
         settingsKeysArr.forEach((key) => {
           indexedStore.add(SETTINGS_DEFAULT[key], key);
@@ -80,7 +80,7 @@ export const useIndexedStore = defineStore(
           if (request) {
             request.onsuccess = () => {
               const deprecatedItems = request.result.filter(
-                (item) => item.title,
+                (item) => item.title
               );
               if (deprecatedItems.length) {
                 deprecatedItems.forEach((item) => {
@@ -94,31 +94,31 @@ export const useIndexedStore = defineStore(
         } else {
           console.error('trans fail for deprecated items');
           callback(
-            new Error('trans fail for deprecated items'),
+            new Error('trans fail for deprecated items')
           );
         }
-      },
+      }
     );
 
     const getObjectStore = (
       name: ObjectStoreValues,
-      mode: RightsOfAccess = 'readonly',
+      mode: RightsOfAccess = 'readonly'
     ): IDBObjectStore => {
       if (!db) {
         throw new Error(
-          'Database is not initialized. Call initDB() first.',
+          'Database is not initialized. Call initDB() first.'
         );
       }
       return db.transaction(name, mode).objectStore(name);
     };
 
     const createStoreRequest = <TInput, TResult>(
-      method: StoreMethod,
+      method: StoreMethod
     ) =>
       promisify<[TInput], TResult>((payload, callback) => {
         const store = getObjectStore(
           objectStore.TODOS,
-          'readwrite',
+          'readwrite'
         );
         const request = (
           store[method] as (value: TInput) => IDBRequest
@@ -130,40 +130,49 @@ export const useIndexedStore = defineStore(
           callback(null, request.error);
       });
 
-    const addTaskToDB = createStoreRequest<Todo, IDBValidKey>('add');
-    const updateTaskInDB = createStoreRequest<Todo, IDBValidKey>('put');
-    const deleteTaskFromDB = createStoreRequest<TodoId, undefined>('delete');
+    const addTaskToDB = createStoreRequest<
+      Todo,
+      IDBValidKey
+    >('add');
+    const updateTaskInDB = createStoreRequest<
+      Todo,
+      IDBValidKey
+    >('put');
+    const deleteTaskFromDB = createStoreRequest<
+      TodoId,
+      undefined
+    >('delete');
 
     const getAllTodosFromDb = promisify<[], Todos>(
       (callback) => {
         const request: IDBRequest<Todos> = getObjectStore(
-          objectStore.TODOS,
+          objectStore.TODOS
         ).getAll();
 
         request.onsuccess = () =>
           callback(request.result as Todos, null);
         request.onerror = () =>
           callback(null, request.error);
-      },
+      }
     );
 
     const getSettingsFromDb = promisify<[], Settings>(
       (callback) => {
         const request = getObjectStore(
-          objectStore.SETTINGS,
+          objectStore.SETTINGS
         ).getAllRecords<IDBValidKey, SettingsValues>();
         request.onsuccess = () => {
           const settings = [...request.result].map(
-            ({ key, value }) => [key, value],
+            ({ key, value }) => [key, value]
           );
           const result = Object.fromEntries(
-            settings,
+            settings
           ) as Settings;
           callback(result, null);
         };
         request.onerror = () =>
           callback(null, request.error);
-      },
+      }
     );
 
     const updateSettingInDB = promisify<
@@ -172,7 +181,7 @@ export const useIndexedStore = defineStore(
     >((key, value, callback) => {
       const request = getObjectStore(
         objectStore.SETTINGS,
-        'readwrite',
+        'readwrite'
       ).put(value, key);
 
       if (request) {
@@ -190,7 +199,7 @@ export const useIndexedStore = defineStore(
       addTaskToDB,
       updateTaskInDB,
       deleteTaskFromDB,
-      updateSettingInDB,
+      updateSettingInDB
     };
-  },
+  }
 );

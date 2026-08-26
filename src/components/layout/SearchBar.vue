@@ -9,7 +9,7 @@ const { searchStr } = storeToRefs(useSearchStore());
 const localSearchStr = ref('');
 
 const setSearchValue = debounce(
-  (value: string) => (searchStr.value = value),
+  (value: string) => (searchStr.value = value)
 );
 
 watch(localSearchStr, (value) => {

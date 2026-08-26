@@ -4,12 +4,12 @@ import {
   onMounted,
   useTemplateRef,
   computed,
-  Ref,
+  Ref
 } from 'vue';
 import { storeToRefs } from 'pinia';
 import {
   useTodosStore,
-  useSettingsStore,
+  useSettingsStore
 } from '@/store/modules';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { TodoDialog, AppFooter } from '@/components';
@@ -37,7 +37,7 @@ const selectedOpen = ref(false);
 const snackbarError = ref(false);
 
 const showFooter = computed(
-  () => !settings.value.hide_efficient,
+  () => !settings.value.hide_efficient
 );
 
 onMounted(() => {
@@ -48,7 +48,7 @@ onMounted(() => {
 
 const viewDay = (
   nativeEvent: Event,
-  { date }: CalendarEvent,
+  { date }: CalendarEvent
 ) => {
   focus.value = date;
   type.value = 'day';
@@ -76,22 +76,22 @@ const next = () => {
 
 const showEvent = (
   nativeEvent: Event,
-  { event }: CalendarEvent,
+  { event }: CalendarEvent
 ) => {
   const open = () => {
     selectedEvent.value = event;
     selectedElement.value = nativeEvent.target;
     requestAnimationFrame(() =>
       requestAnimationFrame(
-        () => (selectedOpen.value = true),
-      ),
+        () => (selectedOpen.value = true)
+      )
     );
   };
 
   if (selectedOpen.value) {
     selectedOpen.value = false;
     requestAnimationFrame(() =>
-      requestAnimationFrame(() => open()),
+      requestAnimationFrame(() => open())
     );
   } else {
     open();
@@ -236,7 +236,7 @@ const closeMenu = () => {
     <v-btn
       :class="[
         'ma-3 position-fixed',
-        { 'mb-12': type === 'day' && showFooter },
+        { 'mb-12': type === 'day' && showFooter }
       ]"
       color="grey-darken-2"
       variant="outlined"

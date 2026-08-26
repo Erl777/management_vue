@@ -2,7 +2,7 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import {
   useSearchStore,
-  useSettingsStore,
+  useSettingsStore
 } from '@/store/modules';
 import { storeToRefs } from 'pinia';
 import { SearchBar, TodoList } from '@/components';
@@ -10,11 +10,15 @@ import { computed } from 'vue';
 
 definePage({ name: 'search', path: '/search' });
 
-const { searchResult, searchStr } = storeToRefs(useSearchStore());
+const { searchResult, searchStr } = storeToRefs(
+  useSearchStore()
+);
 const settingsStore = useSettingsStore();
 const { settings } = storeToRefs(settingsStore);
 
-const totalTodosCount = computed(() => settings.value.doneTotal);
+const totalTodosCount = computed(
+  () => settings.value.doneTotal
+);
 </script>
 
 <template>

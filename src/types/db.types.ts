@@ -1,6 +1,7 @@
 import { objectStore } from '@/constants';
 
-export type ObjectStoreValues = (typeof objectStore)[keyof typeof objectStore];
+export type ObjectStoreValues =
+  (typeof objectStore)[keyof typeof objectStore];
 
 export type RightsOfAccess = 'readwrite' | 'readonly';
 
@@ -15,10 +16,10 @@ declare global {
   export interface IDBObjectStore {
     getAllRecords<
       K extends IDBValidKey = IDBValidKey,
-      V = unknown,
+      V = unknown
     >(
       query?: IDBValidKey | IDBKeyRange,
-      count?: number,
+      count?: number
     ): IDBRequest<IDBRecord<K, V>[]>;
   }
 }

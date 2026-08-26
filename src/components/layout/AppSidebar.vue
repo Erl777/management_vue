@@ -9,10 +9,11 @@ const settingsStore = useSettingsStore();
 const { updateSettingByKey } = settingsStore;
 const { settings } = storeToRefs(settingsStore);
 
-const toggleSettingByKey = (key: toggleableSettingsKeys) => {
+const toggleSettingByKey = (
+  key: toggleableSettingsKeys
+) => {
   updateSettingByKey(key, !settings.value[key]);
 };
-
 </script>
 
 <template>

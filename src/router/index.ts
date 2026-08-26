@@ -7,12 +7,12 @@
 // Composables
 import {
   createRouter,
-  createWebHistory,
+  createWebHistory
 } from 'vue-router/auto';
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
-  routes: [],
+  routes: []
 });
 
 export default router;

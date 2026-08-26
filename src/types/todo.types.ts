@@ -13,11 +13,17 @@ export interface Todo {
   timed: boolean;
 }
 
-export interface TodoWithMultipleDates extends Omit<Todo, 'deferred'> {
+export interface TodoWithMultipleDates extends Omit<
+  Todo,
+  'deferred'
+> {
   deferred: Date[];
 }
 
-export type TodoShortTimeObj = Pick<Todo, 'deferred' | 'start' | 'end'>;
+export type TodoShortTimeObj = Pick<
+  Todo,
+  'deferred' | 'start' | 'end'
+>;
 
 export type TodoId = Todo['id'];
 
@@ -40,4 +46,5 @@ export interface TodoForm extends Omit<
   repeated?: boolean;
 }
 
-export type TodoDeferredType = 'single' | 'everyday' | 'selected';
+export type TodoDeferredType =
+  'single' | 'everyday' | 'selected';

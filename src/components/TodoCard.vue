@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue';
 import {
   useTodosStore,
-  useSettingsStore,
+  useSettingsStore
 } from '@/store/modules';
 import { storeToRefs } from 'pinia';
 import type { Todo, TodoId } from '@/types';
@@ -27,7 +27,7 @@ const { todo } = defineProps<Props>();
 
 const snackbarError = ref(false);
 const shortLabels = computed(
-  () => settings.value.short_card_titles,
+  () => settings.value.short_card_titles
 );
 const isDone = computed(() => todo.isDone);
 
@@ -64,7 +64,7 @@ const deleteTodo = async () => {
         <v-card-title
           :class="[
             'flex-1-1-100 pr-0',
-            { short: shortLabels },
+            { short: shortLabels }
           ]"
         >
           <span>{{ todo.name }}</span>

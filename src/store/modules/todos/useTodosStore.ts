@@ -2,7 +2,7 @@ import { TODAY } from '@/constants';
 import { defineStore } from 'pinia';
 import {
   useIndexedStore,
-  useSettingsStore,
+  useSettingsStore
 } from '@/store/modules';
 import { computed, ComputedRef, ref, toRaw } from 'vue';
 import { useDateConfigurator } from '@/composables';
@@ -10,7 +10,7 @@ import type {
   Todos,
   Todo,
   TodoWithMultipleDates,
-  TodoId,
+  TodoId
 } from '@/types';
 
 export const useTodosStore = defineStore(
@@ -19,7 +19,7 @@ export const useTodosStore = defineStore(
     const {
       deleteTaskFromDB,
       updateTaskInDB,
-      addTaskToDB,
+      addTaskToDB
     } = useIndexedStore();
     const { getDatesTimeObjects, getThreeMonthsAgoDate } =
       useDateConfigurator();
@@ -28,7 +28,7 @@ export const useTodosStore = defineStore(
     const todos = ref<Record<TodoId, Todo>>({});
 
     const todosList: ComputedRef<Todos> = computed(() =>
-      Object.values(todos.value),
+      Object.values(todos.value)
     );
 
     function createRepeatedTodo({
@@ -39,7 +39,7 @@ export const useTodosStore = defineStore(
       start,
       end,
       timed,
-      created,
+      created
     }: Todo) {
       return {
         id: crypto.randomUUID(),
@@ -53,35 +53,33 @@ export const useTodosStore = defineStore(
         start,
         end,
         color,
-        timed,
+        timed
       };
     }
 
     const addTodosFromDateForTheEndOfMonth = async (
-      todo: TodoWithMultipleDates,
+      todo: TodoWithMultipleDates
     ) => {
       const datesArr = getDatesTimeObjects(todo);
       const todosArr = datesArr.map((item) =>
-        createRepeatedTodo(
-          Object.assign({ ...todo }, item),
-        ),
+        createRepeatedTodo(Object.assign({ ...todo }, item))
       );
 
       const promises = todosArr.map((item) =>
-        addTodo(item),
+        addTodo(item)
       );
 
       const result = await Promise.allSettled(promises);
       const hasRejected = result.some(
-        (item) => item.status === 'rejected',
+        (item) => item.status === 'rejected'
       );
 
       if (hasRejected) {
         const failedItems = result.filter(
-          (item) => item.status === 'rejected',
+          (item) => item.status === 'rejected'
         );
         throw new Error(
-          `Не удалось добавить ${failedItems.length} задач группой`,
+          `Не удалось добавить ${failedItems.length} задач группой`
         );
       }
     };
@@ -92,7 +90,7 @@ export const useTodosStore = defineStore(
 
     const setTodosToStore = (payload: Todos) => {
       payload.forEach(
-        (item) => (todos.value[item.id] = item),
+        (item) => (todos.value[item.id] = item)
       );
     };
 
@@ -103,7 +101,7 @@ export const useTodosStore = defineStore(
       } catch (e) {
         console.error(e);
         throw new Error(
-          `Не удалось добавить todo c id ${todo.id}`,
+          `Не удалось добавить todo c id ${todo.id}`
         );
       }
     };
@@ -121,7 +119,7 @@ export const useTodosStore = defineStore(
         } catch (e) {
           console.error(e);
           throw new Error(
-            'Не удалось изменить статус задачи',
+            'Не удалось изменить статус задачи'
           );
         }
       } else {
@@ -138,7 +136,7 @@ export const useTodosStore = defineStore(
       } catch (e) {
         console.error(e);
         throw new Error(
-          `Не удалось удалить элемент с id ${id}`,
+          `Не удалось удалить элемент с id ${id}`
         );
       }
     };
@@ -159,13 +157,13 @@ export const useTodosStore = defineStore(
     };
 
     const getTodosDeferredOnDate = (
-      date: string,
+      date: string
     ): Todos => {
       return todosList.value.filter(
         (item) =>
           item.deferred &&
           item.deferred.toDateString() ===
-            new Date(date).toDateString(),
+            new Date(date).toDateString()
       );
     };
 
@@ -188,19 +186,19 @@ export const useTodosStore = defineStore(
 
       if (outdatedTodosId.length) {
         const promises = outdatedTodosId.map((id) =>
-          deleteTodoById(id),
+          deleteTodoById(id)
         );
         const result = await Promise.allSettled(promises);
         const hasRejected = result.some(
-          (item) => item.status === 'rejected',
+          (item) => item.status === 'rejected'
         );
 
         if (hasRejected) {
           const failedItems = result.filter(
-            (item) => item.status === 'rejected',
+            (item) => item.status === 'rejected'
           );
           throw new Error(
-            `Не удалось удалить ${failedItems.length} задач группой`,
+            `Не удалось удалить ${failedItems.length} задач группой`
           );
         }
       }
@@ -216,7 +214,7 @@ export const useTodosStore = defineStore(
       deleteTodoById,
       checkOutdatedTasks,
       addTodosFromDateForTheEndOfMonth,
-      getTodosDeferredOnDate,
+      getTodosDeferredOnDate
     };
-  },
+  }
 );

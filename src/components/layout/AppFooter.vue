@@ -2,7 +2,7 @@
 import { computed, ref, watch } from 'vue';
 import {
   useSettingsStore,
-  useTodosStore,
+  useTodosStore
 } from '@/store/modules';
 import { storeToRefs } from 'pinia';
 
@@ -23,18 +23,26 @@ watch(
   () => [selectedDate, settings.value.doneTotal],
   () => {
     if (selectedDate) {
-      const todosByDate = getTodosDeferredOnDate(selectedDate);
+      const todosByDate =
+        getTodosDeferredOnDate(selectedDate);
       if (todosByDate.length) {
-        const doneTodosByDate = todosByDate.filter((item) => item.isDone);
+        const doneTodosByDate = todosByDate.filter(
+          (item) => item.isDone
+        );
         if (doneTodosByDate.length) {
-          const denominator = todosByDate.length > averageDayTodosCount ? todosByDate.length : averageDayTodosCount;
-          efficient.value = (doneTodosByDate.length / denominator) * 100 || 0;
+          const denominator =
+            todosByDate.length > averageDayTodosCount
+              ? todosByDate.length
+              : averageDayTodosCount;
+          efficient.value =
+            (doneTodosByDate.length / denominator) * 100 ||
+            0;
         } else {
           efficient.value = 0;
         }
       }
     }
-  },
+  }
 );
 
 const efficientColor = computed(() => {
